@@ -8,31 +8,42 @@ from models.userroutes import router as user_router
 from services.problemservice import start_codeforces_scheduler, fetch_and_sync_codeforces_problems, scheduler as cf_scheduler
 from services.leetcodeservice import start_leetcode_scheduler, fetch_and_sync_leetcode_problems, scheduler as lc_scheduler
 
-Base.metadata.create_all(bind=engine)
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    print(f"DB initialization warning: {e}")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    start_codeforces_scheduler()
-    start_leetcode_scheduler()
-    asyncio.create_task(fetch_and_sync_codeforces_problems())
-    asyncio.create_task(fetch_and_sync_leetcode_problems())
-    
-    async def _init_knowledge_graph():
-        from utils.db import LocalSession
-        from services.langchainservice import build_problems_knowledge_graph
-        db = LocalSession()
-        try:
-            await asyncio.to_thread(build_problems_knowledge_graph, db)
-        finally:
-            db.close()
+    try:
+        start_codeforces_scheduler()
+        start_leetcode_scheduler()
+        asyncio.create_task(fetch_and_sync_codeforces_problems())
+        asyncio.create_task(fetch_and_sync_leetcode_problems())
+        
+        async def _init_knowledge_graph():
+            from utils.db import LocalSession
+            from services.langchainservice import build_problems_knowledge_graph
+            db = LocalSession()
+            try:
+                await asyncio.to_thread(build_problems_knowledge_graph, db)
+            except Exception as ex:
+                print(f"Knowledge graph init warning: {ex}")
+            finally:
+                db.close()
 
-    asyncio.create_task(_init_knowledge_graph())
+        asyncio.create_task(_init_knowledge_graph())
+    except Exception as e:
+        print(f"Lifespan startup warning: {e}")
         
     yield
-    if cf_scheduler.running:
-        cf_scheduler.shutdown()
-    if lc_scheduler.running:
-        lc_scheduler.shutdown()
+    try:
+        if cf_scheduler.running:
+            cf_scheduler.shutdown()
+        if lc_scheduler.running:
+            lc_scheduler.shutdown()
+    except Exception as e:
+        print(f"Lifespan shutdown warning: {e}")
 
 from fastapi.middleware.cors import CORSMiddleware
 
