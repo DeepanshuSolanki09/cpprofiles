@@ -1,18 +1,13 @@
 {
-  "builds": [
+  "outputDirectory": "frontend/.next",
+  "rewrites": [
     {
-      "src": "api/index.py",
-      "use": "@vercel/python"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "api/index.py"
+      "source": "/users/:path*",
+      "destination": "https://cpprofiles-r346.vercel.app/users/:path*"
     },
     {
-      "src": "/(.*)",
-      "dest": "api/index.py"
+      "source": "/hello",
+      "destination": "https://cpprofiles-r346.vercel.app/hello"
     }
   ]
 }

@@ -5,7 +5,7 @@ import { Mail, Lock, User, Terminal, ArrowRight, AlertCircle, CheckCircle2, Shie
 import gsap from 'gsap';
 import ForgotPasswordModal from '@/components/ForgotPasswordModal';
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '') + '/users';
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '') + '/users';
 
 const AVATARS = [
   { id: 'bear', text: 'CP', label: 'Solver' },

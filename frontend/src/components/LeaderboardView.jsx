@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Trophy, RefreshCw, Zap, Search, Award } from 'lucide-react';
 import { audioSynth } from '@/utils/audioSynth';
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '') + '/users';
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '') + '/users';
 
 export default function LeaderboardView({ onSelectUser }) {
   const [leaderboard, setLeaderboard] = useState([]);

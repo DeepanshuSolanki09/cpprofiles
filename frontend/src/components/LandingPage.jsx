@@ -321,7 +321,7 @@ export default function LandingPage({ onGoToAuth }) {
   useEffect(() => {
     const fetchPublicStats = async () => {
       try {
-        const apiBase = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '') + '/users';
+        const apiBase = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '') + '/users';
         const res = await fetch(`${apiBase}/public-stats`);
         if (res.ok) {
           const data = await res.json();

@@ -19,7 +19,7 @@ import UnifiedContestView from '@/components/platforms/UnifiedContestView';
 import UnifiedSolvedView from '@/components/platforms/UnifiedSolvedView';
 import { audioSynth } from '@/utils/audioSynth';
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '') + '/users';
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '') + '/users';
 
 export default function VipDashboard({ user, onLogout, onUserUpdate }) {
   const [activeTab, setActiveTab] = useState('profiles');
@@ -81,7 +81,15 @@ export default function VipDashboard({ user, onLogout, onUserUpdate }) {
     if (!user?.id) return;
     setLoadingDashboard(true);
     try {
-      const res = await fetch(`${API_BASE}/dashboard/${user.id}`);
+      const queryParams = new URLSearchParams();
+      if (user?.profile?.leetcode_username) queryParams.append('leetcode', user.profile.leetcode_username);
+      if (user?.profile?.cf_username) queryParams.append('codeforces', user.profile.cf_username);
+      if (user?.profile?.cc_username) queryParams.append('codechef', user.profile.cc_username);
+      if (user?.profile?.atcoder_username) queryParams.append('atcoder', user.profile.atcoder_username);
+      if (user?.profile?.github_username) queryParams.append('github', user.profile.github_username);
+
+      const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
+      const res = await fetch(`${API_BASE}/dashboard/${user.id}${queryString}`);
       if (res.ok) {
         const data = await res.json();
         setDashboardData(data);
