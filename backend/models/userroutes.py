@@ -51,12 +51,18 @@ async def get_user_dashboard(
         if cached_data is not None:
             return cached_data
 
-    user = db.query(User).filter(User.id == user_id).first()
+    try:
+        user = db.query(User).filter(User.id == user_id).first()
+    except Exception as e:
+        print(f"Error querying dashboard user {user_id}: {e}")
+        user = None
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="user not found"
         )
+
 
     profile = user.profile
     dashboard_data: Dict[str, Any] = {
@@ -342,7 +348,12 @@ def user_login(login_data: UserLogin, db: Session = Depends(get_db)):
 
 @router.get("/leaderboard", response_model=List[Dict[str, Any]])
 async def get_solved_leaderboard(db: Session = Depends(get_db)):
-    users = db.query(User).all()
+    try:
+        users = db.query(User).all()
+    except Exception as e:
+        print(f"Leaderboard DB query error: {e}")
+        users = []
+
     leaderboard = []
 
     for u in users:
@@ -406,13 +417,19 @@ def get_all_users(db: Session = Depends(get_db)):
 
 @router.get("/{user_id}", response_model=UserResponse)
 def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.id == user_id).first()
+    try:
+        user = db.query(User).filter(User.id == user_id).first()
+    except Exception as e:
+        print(f"Error querying user {user_id}: {e}")
+        user = None
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="user not found"
         )
     return user
+
 
 @router.put("/{user_id}", response_model=UserResponse)
 def update_user(
