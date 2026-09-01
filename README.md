@@ -70,16 +70,20 @@ graph TD
     %% External APIs & Integrations Layer
     subgraph External ["External APIs & Data Sources"]
         CF_API["Codeforces Official API (codeforces.com/api)"]
-        LC_API["LeetCode GraphQL / Public API"]
-        CC_API["CodeChef Scraper / API"]
-        AC_API["AtCoder API / Scraper"]
-        GH_API["GitHub REST API"]
+        LC_API["Custom Self-Hosted LeetCode API Service"]
+        CC_AC_API["CodeChef & AtCoder API Service (codechefandatcoder.vercel.app)"]
+        GH_API["GitHub REST API (api.github.com)"]
     end
 
     %% Service Connections
-    AnalysisService -->|Fetches History| External
+    UserRouter -->|Fetches Live User Stats| CF_API
+    UserRouter -->|Fetches Live User Stats| LC_API
+    UserRouter -->|Fetches Live User Stats| CC_AC_API
+    UserRouter -->|Fetches Live User Stats| GH_API
+    
     ProblemService -->|Syncs Contests & Problems| CF_API
     LeetCodeService -->|Syncs Problems| LC_API
+    AnalysisService -->|Analyzes Aggregated User Data| UserRouter
     
     UserRouter --> PostgresDB
     ProblemService --> PostgresDB
