@@ -12,6 +12,11 @@ IS_VERCEL = os.environ.get("VERCEL") == "1" or os.environ.get("VERCEL_ENV") is n
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as exc:
+        print(f"Database initialization warning: {exc}")
+
     if not IS_VERCEL:
         try:
             from services.problemservice import start_codeforces_scheduler, fetch_and_sync_codeforces_problems
