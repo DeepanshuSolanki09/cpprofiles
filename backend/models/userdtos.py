@@ -48,10 +48,11 @@ class UserUpdate(BaseModel):
 
 class UserResponse(UserBase):
     id: int
-    created_at: datetime
-    updated_at: datetime
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
     profile: Optional[ProfileResponse] = None
     access_token: Optional[str] = None
     token_type: Optional[str] = "bearer"
 
     model_config = ConfigDict(from_attributes=True)
+

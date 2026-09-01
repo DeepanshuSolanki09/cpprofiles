@@ -20,10 +20,15 @@ except Exception as e:
 LocalSession = sessionmaker(bind=engine)
 
 def get_db():
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as exc:
+        print(f"Auto table creation warning: {exc}")
     session = LocalSession()
     try:
         yield session
     finally:
         session.close()
+
 
         

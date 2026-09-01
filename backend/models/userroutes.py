@@ -15,18 +15,29 @@ router = APIRouter(prefix="/users", tags=["Users"])
 
 @router.get("/public-stats", response_model=Dict[str, Any])
 def get_public_stats(db: Session = Depends(get_db)):
-    total_users = db.query(User).count()
-    total_problems = db.query(Problem).count()
-    cf_problems = db.query(Problem).filter(Problem.platform == "codeforces").count()
-    lc_problems = db.query(Problem).filter(Problem.platform == "leetcode").count()
-    
-    return {
-        "active_coders": total_users,
-        "total_problems": total_problems,
-        "codeforces_problems": cf_problems,
-        "leetcode_problems": lc_problems,
-        "system_uptime": "99.99%"
-    }
+    try:
+        total_users = db.query(User).count()
+        total_problems = db.query(Problem).count()
+        cf_problems = db.query(Problem).filter(Problem.platform == "codeforces").count()
+        lc_problems = db.query(Problem).filter(Problem.platform == "leetcode").count()
+        
+        return {
+            "active_coders": total_users,
+            "total_problems": total_problems,
+            "codeforces_problems": cf_problems,
+            "leetcode_problems": lc_problems,
+            "system_uptime": "99.99%"
+        }
+    except Exception as e:
+        print(f"Error fetching public stats: {e}")
+        return {
+            "active_coders": 0,
+            "total_problems": 0,
+            "codeforces_problems": 0,
+            "leetcode_problems": 0,
+            "system_uptime": "99.99%"
+        }
+
 
 @router.get("/dashboard/{user_id}", response_model=Dict[str, Any])
 async def get_user_dashboard(
@@ -385,8 +396,13 @@ async def get_solved_leaderboard(db: Session = Depends(get_db)):
 
 @router.get("/", response_model=List[UserResponse])
 def get_all_users(db: Session = Depends(get_db)):
-    users = db.query(User).all()
-    return users
+    try:
+        users = db.query(User).all()
+        return users
+    except Exception as e:
+        print(f"Error fetching users: {e}")
+        return []
+
 
 @router.get("/{user_id}", response_model=UserResponse)
 def get_user_by_id(user_id: int, db: Session = Depends(get_db)):
