@@ -10,7 +10,7 @@ A comprehensive full-stack competitive programming aggregation and analytics pla
 graph TD
     %% User Layer
     subgraph Client ["Client Layer (Next.js Frontend)"]
-        UI["ToonAuthApp (Main Dashboard / Navigation)"]
+        UI["CPProfilesApp (Main Dashboard / Navigation)"]
         
         subgraph Components ["UI Components"]
             AuthModals["Authentication & Profile Setup"]
