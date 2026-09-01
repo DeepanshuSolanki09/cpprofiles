@@ -7,12 +7,8 @@ from models.usermodels import User, Profile
 from models.problemmodel import Problem
 from models.userroutes import router as user_router
 
-try:
-    Base.metadata.create_all(bind=engine)
-except Exception as e:
-    print(f"DB initialization warning: {e}")
-
 IS_VERCEL = os.environ.get("VERCEL") == "1" or os.environ.get("VERCEL_ENV") is not None
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

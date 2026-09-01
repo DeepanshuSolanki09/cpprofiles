@@ -6,10 +6,16 @@ class AsyncTTLCache:
     def __init__(self, default_ttl: int = 1800):
         self._cache: Dict[str, Tuple[Any, float]] = {}
         self._default_ttl = default_ttl
-        self._lock = asyncio.Lock()
+        self._lock: Optional[asyncio.Lock] = None
+
+    @property
+    def lock(self) -> asyncio.Lock:
+        if self._lock is None:
+            self._lock = asyncio.Lock()
+        return self._lock
 
     async def get(self, key: str) -> Optional[Any]:
-        async with self._lock:
+        async with self.lock:
             if key not in self._cache:
                 return None
             val, expiry = self._cache[key]
@@ -19,17 +25,18 @@ class AsyncTTLCache:
             return val
 
     async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> None:
-        async with self._lock:
+        async with self.lock:
             expire_at = time.time() + (ttl if ttl is not None else self._default_ttl)
             self._cache[key] = (value, expire_at)
 
     async def delete(self, key: str) -> None:
-        async with self._lock:
+        async with self.lock:
             self._cache.pop(key, None)
 
     async def clear(self) -> None:
-        async with self._lock:
+        async with self.lock:
             self._cache.clear()
 
 dashboard_cache = AsyncTTLCache(default_ttl=300)
 analysis_cache = AsyncTTLCache(default_ttl=1800)
+
