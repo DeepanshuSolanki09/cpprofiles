@@ -10,10 +10,10 @@ logger = logging.getLogger("uvicorn")
 
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_MODELS = [
-    "llama-3.3-70b-versatile",
-    "llama-3.1-8b-instant",
-    "mixtral-8x7b-32768",
-    "gemma2-9b-it"
+    "openai/gpt-oss-120b",
+    "openai/gpt-oss-20b",
+    "qwen/qwen3.6-27b",
+    "groq/compound-mini"
 ]
 
 
@@ -155,7 +155,7 @@ async def _call_groq_api(system_prompt: str, user_prompt: str, api_key: str) -> 
     raise RuntimeError(f"All Groq models failed. Last error: {last_error}")
 
 async def _call_gemini_api(system_prompt: str, user_prompt: str, api_key: str) -> Dict[str, Any]:
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
     headers = {"Content-Type": "application/json"}
     payload = {
         "contents": [
