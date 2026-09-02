@@ -191,6 +191,7 @@ export default function LeetCodeView({ data, username }) {
 
             <SubmissionHeatmap
         submissions={recentSubmissions}
+        submissionCalendar={profile.submissionCalendar || lcData.submissionCalendar}
         colorTheme="green"
         title="LeetCode Submission Heatmap"
       />

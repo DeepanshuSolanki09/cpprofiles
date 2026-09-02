@@ -3,10 +3,28 @@
 import React, { useMemo } from 'react';
 import { Calendar, Flame } from 'lucide-react';
 
-export default function SubmissionHeatmap({ submissions = [], colorTheme = 'purple', title = 'Submission Activity' }) {
+export default function SubmissionHeatmap({ submissions = [], submissionCalendar = null, colorTheme = 'purple', title = 'Submission Activity' }) {
   const { gridDays, totalActiveDays, maxDailyCount, totalSubmissions, currentStreak } = useMemo(() => {
     const countsByDate = {};
     let totalCount = 0;
+
+    if (submissionCalendar) {
+      try {
+        const calDict = typeof submissionCalendar === 'string' ? JSON.parse(submissionCalendar) : submissionCalendar;
+        if (typeof calDict === 'object' && calDict !== null) {
+          Object.entries(calDict).forEach(([ts, count]) => {
+            let numTs = Number(ts);
+            if (numTs < 10000000000) numTs *= 1000;
+            const dateStr = new Date(numTs).toISOString().split('T')[0];
+            const numCount = Number(count) || 0;
+            countsByDate[dateStr] = (countsByDate[dateStr] || 0) + numCount;
+            totalCount += numCount;
+          });
+        }
+      } catch (err) {
+        console.error('Error parsing submissionCalendar in heatmap:', err);
+      }
+    }
 
     submissions.forEach((sub) => {
       let ts = sub.timestamp || sub.creationTimeSeconds || sub.creationTime;
@@ -19,8 +37,10 @@ export default function SubmissionHeatmap({ submissions = [], colorTheme = 'purp
       }
 
       const dateStr = new Date(ts).toISOString().split('T')[0];
-      countsByDate[dateStr] = (countsByDate[dateStr] || 0) + 1;
-      totalCount++;
+      if (!submissionCalendar || !countsByDate[dateStr]) {
+        countsByDate[dateStr] = (countsByDate[dateStr] || 0) + 1;
+        if (!submissionCalendar) totalCount++;
+      }
     });
 
     const days = [];

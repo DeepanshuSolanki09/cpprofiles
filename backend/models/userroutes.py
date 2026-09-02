@@ -91,6 +91,8 @@ async def get_user_dashboard(
             tasks["lc_user"] = client.get(f"{LEETCODE_BASE}/{lc_user}", timeout=8.0)
             tasks["lc_solved"] = client.get(f"{LEETCODE_BASE}/{lc_user}/solved", timeout=8.0)
             tasks["lc_contest"] = client.get(f"{LEETCODE_BASE}/{lc_user}/contest", timeout=8.0)
+            tasks["lc_calendar"] = client.get(f"{LEETCODE_BASE}/{lc_user}/calendar", timeout=8.0)
+            tasks["lc_ac"] = client.get(f"{LEETCODE_BASE}/{lc_user}/acSubmission", timeout=8.0)
 
         if profile.cf_username:
             cf_user = profile.cf_username
@@ -134,6 +136,10 @@ async def get_user_dashboard(
                 lc_u_data = _get_json("lc_user", {})
                 lc_s_data = _get_json("lc_solved", {})
                 lc_cont_data = _get_json("lc_contest", {})
+                lc_cal_data = _get_json("lc_calendar", {})
+                lc_ac_data = _get_json("lc_ac", {})
+
+                recent_subs = lc_ac_data.get("submission", []) if isinstance(lc_ac_data, dict) else []
 
                 lc_prof_combined = {
                     **lc_u_data,
@@ -143,13 +149,15 @@ async def get_user_dashboard(
                     "mediumSolved": lc_s_data.get("mediumSolved", 0),
                     "hardSolved": lc_s_data.get("hardSolved", 0),
                     "ranking": lc_u_data.get("ranking", "N/A"),
+                    "recentSubmissions": recent_subs,
+                    "submissionCalendar": lc_cal_data.get("submissionCalendar") if isinstance(lc_cal_data, dict) else None
                 }
 
                 dashboard_data["leetcode"] = {
                     "profile": lc_prof_combined,
                     "contest_history": lc_cont_data
                 }
-                if lc_u_data or lc_s_data or lc_cont_data:
+                if lc_u_data or lc_s_data or lc_cont_data or lc_cal_data:
                     has_valid_data = True
 
             if profile.cf_username:

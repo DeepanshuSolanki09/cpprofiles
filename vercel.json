@@ -1,13 +1,13 @@
 {
-  "outputDirectory": "frontend/.next",
+  "outputDirectory": ".next",
   "rewrites": [
     {
       "source": "/users/:path*",
-      "destination": "https://cpprofiles-r346.vercel.app/users/:path*"
+      "destination": "https://cpprofiles-phuw.vercel.app/users/:path*"
     },
     {
       "source": "/hello",
-      "destination": "https://cpprofiles-r346.vercel.app/hello"
+      "destination": "https://cpprofiles-phuw.vercel.app/hello"
     }
   ]
 }
