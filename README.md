@@ -4,6 +4,13 @@ A comprehensive full-stack competitive programming aggregation and analytics pla
 
 ---
 
+## 🚀 Live Deployments
+
+- **Frontend App**: [https://cpprofiles-nrfd.vercel.app/](https://cpprofiles-nrfd.vercel.app/)
+- **Backend API**: [https://cpprofiles-phuw.vercel.app](https://cpprofiles-phuw.vercel.app)
+
+---
+
 ## System Architecture & Workflow Diagram
 
 ```mermaid
