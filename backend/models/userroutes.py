@@ -87,7 +87,8 @@ async def get_user_dashboard(
 
         if profile.leetcode_username:
             lc_user = profile.leetcode_username
-            tasks["lc_prof"] = client.get(f"{LEETCODE_BASE}/{lc_user}/profile", timeout=8.0)
+            tasks["lc_user"] = client.get(f"{LEETCODE_BASE}/{lc_user}", timeout=8.0)
+            tasks["lc_solved"] = client.get(f"{LEETCODE_BASE}/{lc_user}/solved", timeout=8.0)
             tasks["lc_contest"] = client.get(f"{LEETCODE_BASE}/{lc_user}/contest", timeout=8.0)
 
         if profile.cf_username:
@@ -129,13 +130,25 @@ async def get_user_dashboard(
             has_valid_data = False
 
             if profile.leetcode_username:
-                lc_prof_data = _get_json("lc_prof", {})
+                lc_u_data = _get_json("lc_user", {})
+                lc_s_data = _get_json("lc_solved", {})
                 lc_cont_data = _get_json("lc_contest", {})
+
+                lc_prof_combined = {
+                    **lc_u_data,
+                    **lc_s_data,
+                    "totalSolved": lc_s_data.get("solvedProblem") or lc_s_data.get("totalSolved") or 0,
+                    "easySolved": lc_s_data.get("easySolved", 0),
+                    "mediumSolved": lc_s_data.get("mediumSolved", 0),
+                    "hardSolved": lc_s_data.get("hardSolved", 0),
+                    "ranking": lc_u_data.get("ranking", "N/A"),
+                }
+
                 dashboard_data["leetcode"] = {
-                    "profile": lc_prof_data,
+                    "profile": lc_prof_combined,
                     "contest_history": lc_cont_data
                 }
-                if lc_prof_data or lc_cont_data:
+                if lc_u_data or lc_s_data or lc_cont_data:
                     has_valid_data = True
 
             if profile.cf_username:
@@ -489,4 +502,16 @@ def update_user(
     db.refresh(user)
 
     return user
+
+
+@router.post("/sync-problems")
+async def trigger_problem_sync():
+    from services.problemservice import fetch_and_sync_codeforces_problems
+    from services.leetcodeservice import fetch_and_sync_leetcode_problems
+
+    asyncio.create_task(fetch_and_sync_codeforces_problems())
+    asyncio.create_task(fetch_and_sync_leetcode_problems())
+
+    return {"message": "Problem sync triggered in background!"}
+
 
