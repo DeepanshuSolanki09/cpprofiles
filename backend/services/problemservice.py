@@ -121,7 +121,7 @@ async def fetch_and_sync_codeforces_problems():
             existing_urls.add(problem_url)
 
         if new_problem_objects:
-            db.bulk_save_objects(new_problem_objects)
+            db.add_all(new_problem_objects)
             db.commit()
             logger.info(f"Successfully added {len(new_problem_objects)} new Codeforces problems to DB.")
         else:

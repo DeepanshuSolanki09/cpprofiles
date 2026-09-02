@@ -281,8 +281,7 @@ def _sync_query_similar_problems(weakness_dict: Dict[str, Any], k: int = 10, db:
 
         rated_problems = (
             db.query(Problem)
-            .filter(Problem.rating.isnot(None))
-            .order_by(func.abs(Problem.rating - target_rating))
+            .order_by(func.abs(func.coalesce(Problem.rating, target_rating) - target_rating))
             .limit(k)
             .all()
         )

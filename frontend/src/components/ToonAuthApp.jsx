@@ -1,27 +1,28 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import LandingPage from '@/components/LandingPage';
 import AuthPage from '@/components/AuthPage';
 import VipDashboard from '@/components/VipDashboard';
 
 export default function ToonAuthApp() {
-  const [authenticatedUser, setAuthenticatedUser] = useState(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('cp_hero_user');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed && (parsed.id || parsed.access_token)) {
-            return parsed;
-          }
+  const [authenticatedUser, setAuthenticatedUser] = useState(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    try {
+      const saved = localStorage.getItem('cp_hero_user');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && (parsed.id || parsed.access_token)) {
+          setAuthenticatedUser(parsed);
         }
-      } catch (err) {
-        console.error('Failed to load user session from localStorage', err);
       }
+    } catch (err) {
+      console.error('Failed to load user session from localStorage', err);
     }
-    return null;
-  });
+  }, []);
 
   const [currentScreen, setCurrentScreen] = useState('landing');
 
@@ -33,6 +34,8 @@ export default function ToonAuthApp() {
       localStorage.removeItem('cp_hero_user');
     }
   };
+
+  if (!mounted) return null;
 
   if (authenticatedUser) {
     return (

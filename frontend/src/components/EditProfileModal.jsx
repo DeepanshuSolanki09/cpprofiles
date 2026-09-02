@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { X, Save, AlertCircle } from 'lucide-react';
 import { audioSynth } from '@/utils/audioSynth';
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '') + '/users';
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '') + '/users';
 
 const AVATARS = [
   { id: 'bear', emoji: '🐻', label: 'Bear' },
@@ -66,7 +66,7 @@ export default function EditProfileModal({ isOpen, onClose, user, onUserUpdate }
     };
 
     try {
-      const res = await fetch(`${API_BASE}/profile/${user.id}`, {
+      const res = await fetch(`${API_BASE}/${user.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

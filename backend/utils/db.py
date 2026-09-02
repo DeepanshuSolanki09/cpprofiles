@@ -1,9 +1,16 @@
 import os
+from dotenv import load_dotenv
+
+# Ensure environment variables are loaded
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env"))
+load_dotenv()
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from utils.settings import settings
 
-db_url = settings.DB_CONNECTION
+db_url = os.environ.get("DB_CONNECTION") or settings.DB_CONNECTION
+
 if not db_url or "sqlite" in db_url:
     if os.environ.get("VERCEL") or os.environ.get("VERCEL_ENV"):
         db_url = "sqlite:////tmp/app.db"
@@ -25,25 +32,21 @@ except ImportError:
     except ImportError:
         pass
 
-
 Base = declarative_base()
 
 def _init_engine(url_str):
     if "sqlite" in url_str:
         return create_engine(url=url_str, connect_args={"check_same_thread": False})
-    return create_engine(url=url_str, pool_pre_ping=True)
+    return create_engine(url=url_str, pool_pre_ping=True, pool_size=5, max_overflow=10)
 
 try:
     engine = _init_engine(db_url)
-    if "sqlite" not in db_url:
-        with engine.connect() as conn:
-            pass
+    print(f"Connected successfully to DB engine: {engine.url.drivername}")
 except Exception as e:
     print(f"PostgreSQL DB Connection failed ('{e}'). Falling back to local SQLite database.")
     tmp_path = "/tmp/app.db" if (os.environ.get("VERCEL") or os.environ.get("VERCEL_ENV")) else "./app.db"
     db_url = f"sqlite:///{tmp_path}"
     engine = create_engine(url=db_url, connect_args={"check_same_thread": False})
-
 
 LocalSession = sessionmaker(bind=engine)
 
@@ -57,6 +60,3 @@ def get_db():
         yield session
     finally:
         session.close()
-
-
-        

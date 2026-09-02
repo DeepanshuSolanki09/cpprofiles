@@ -19,7 +19,7 @@ import UnifiedContestView from '@/components/platforms/UnifiedContestView';
 import UnifiedSolvedView from '@/components/platforms/UnifiedSolvedView';
 import { audioSynth } from '@/utils/audioSynth';
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '') + '/users';
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '') + '/users';
 
 export default function VipDashboard({ user, onLogout, onUserUpdate }) {
   const [activeTab, setActiveTab] = useState('profiles');

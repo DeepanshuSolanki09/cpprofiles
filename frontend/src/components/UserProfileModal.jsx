@@ -11,7 +11,7 @@ import GitHubView from '@/components/platforms/GitHubView';
 import UnifiedContestView from '@/components/platforms/UnifiedContestView';
 import UnifiedSolvedView from '@/components/platforms/UnifiedSolvedView';
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '') + '/users';
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000').replace(/\/$/, '') + '/users';
 
 export default function UserProfileModal({ user, onClose }) {
   const [activePlatform, setActivePlatform] = useState('all_contests');

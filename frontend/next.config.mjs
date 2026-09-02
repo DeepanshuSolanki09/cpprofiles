@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   async rewrites() {
-    const backendUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://cpprofiles-r346.vercel.app').replace(/\/$/, '');
+    const backendUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://cpprofiles-phuw.vercel.app').replace(/\/$/, '');
     return [
       {
         source: '/users/:path*',
